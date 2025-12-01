@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Receipt - {{ registration.registration_number }} - Titanium Science Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+
+        .header,
+        .footer,
+        .no-print {
+            display: none !important;
+        }
+
+        .receipt-container {
+            box-shadow: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+    }
+
+    .receipt-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 3rem;
+        box-shadow: var(--shadow-2xl);
+        border-radius: var(--radius-xl);
+    }
+
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid var(--primary-600);
+    }
+
+    .receipt-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .receipt-reg-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--error-text);
+        margin-top: 1rem;
+    }
+
+    .receipt-section {
+        margin-bottom: 2rem;
+    }
+
+    .receipt-section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-700);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .receipt-table td {
+        padding: 0.75rem 0;
+        vertical-align: top;
+    }
+
+    .receipt-table td:first-child {
+        font-weight: 600;
+        color: var(--gray-700);
+        width: 180px;
+    }
+
+    .receipt-footer {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--gray-200);
+        text-align: center;
+        color: var(--gray-600);
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="receipt-header">
+            <div class="receipt-title">
+                <i class="fas fa-atom"></i> St. Joseph International School
+            </div>
+            <h2 style="color: var(--gray-700); margin: 0;">Titanium Science Club</h2>
+            <h3 style="color: var(--gray-600); font-weight: 600; margin-top: 0.5rem;">Workshop Registration Receipt</h3>
+            <div class="receipt-reg-number">
+                Registration No: {{ registration.registration_number }}
+            </div>
+        </div>
+
+        <!-- Workshop Details -->
+        <div class="receipt-section">
+            <h4 class="receipt-section-title">Workshop Details</h4>
+            <table class="receipt-table">
+                <tr>
+                    <td>Workshop Name:</td>
+                    <td>{{ workshop.name }}</td>
+                </tr>
+                <tr>
+                    <td>Date:</td>
+                    <td>{{ workshop.workshop_date }}</td>
+                </tr>
+                <tr>
+                    <td>Time:</td>
+                    <td>{{ workshop.time }}</td>
+                </tr>
+                <tr>
+                    <td>Duration:</td>
+                    <td>{{ workshop.duration }}</td>
+                </tr>
+                <tr>
+                    <td>Venue:</td>
+                    <td>{{ workshop.venue }}</td>
+                </tr>
+                {% if workshop.organizer %}
+                <tr>
+                    <td>Organizer:</td>
+                    <td>{{ workshop.organizer }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+        <!-- Student Information -->
+        <div class="receipt-section">
+            <h4 class="receipt-section-title">Student Information</h4>
+            <table class="receipt-table">
+                <tr>
+                    <td>Student Name:</td>
+                    <td>{{ registration.student_name }}</td>
+                </tr>
+                <tr>
+                    <td>Grade:</td>
+                    <td>{{ registration.grade }}</td>
+                </tr>
+                <tr>
+                    <td>School:</td>
+                    <td>{{ registration.school_name }}</td>
+                </tr>
+                <tr>
+                    <td>Contact Number:</td>
+                    <td>{{ registration.contact_number }}</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>{{ registration.email }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="receipt-section">
+            <h4 class="receipt-section-title">Payment Information</h4>
+            <table class="receipt-table">
+                <tr>
+                    <td>Workshop Fee:</td>
+                    <td>
+                        {% if workshop.is_free %}
+                        <span style="color: var(--success-text); font-weight: 700; font-size: 1.25rem;">FREE</span>
+                        {% else %}
+                        <span style="color: var(--primary-600); font-weight: 700; font-size: 1.25rem;">৳{{ workshop.fee
+                            }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Payment Status:</td>
+                    <td>
+                        <span style="color: var(--success-text); font-weight: 700;">
+                            {{ registration.get_payment_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Registration Date:</td>
+                    <td>{{ registration.registered_at|date:"F d, Y H:i" }}</td>
+                </tr>
+                {% if registration.payment %}
+                <tr>
+                    <td>Transaction ID:</td>
+                    <td>{{ registration.payment.transaction_id }}</td>
+                </tr>
+                {% if registration.payment.completed_at %}
+                <tr>
+                    <td>Payment Date:</td>
+                    <td>{{ registration.payment.completed_at|date:"F d, Y H:i" }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="receipt-footer">
+            <p style="margin-bottom: 0.5rem;">This is a computer-generated receipt and does not require a signature.</p>
+            <p style="margin-bottom: 0.5rem;"><strong>St. Joseph International School | Titanium Science Club</strong>
+            </p>
+            <p style="margin-bottom: 0;">Generated on: {{ now|date:"F d, Y H:i:s" }}</p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="no-print" style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
+        <button onclick="window.print()" class="btn btn-primary btn-lg">
+            <i class="fas fa-print"></i> Print Receipt
+        </button>
+        <a href="{% url 'download_receipt' registration.id %}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-download"></i> Download PDF
+        </a>
+        <a href="{% url 'workshop_list' %}" class="btn btn-outline btn-lg">
+            <i class="fas fa-arrow-left"></i> Back to Workshops
+        </a>
+    </div>
+</div>
+{% endblock %}

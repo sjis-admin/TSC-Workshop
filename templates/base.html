@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Titanium Science Club Workshop Registration - St. Joseph International School">
+    <meta name="keywords" content="workshops, science, robotics, physics, STEM education, Bangladesh">
+    <meta name="author" content="St. Joseph International School">
+
+    <title>{% block title %}Titanium Science Club Workshops{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v={% now 'U' %}">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-atom"></i> Titanium SC
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="{% url 'workshop_list' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a></li>
+                        <li><a href="/admin/">
+                                <i class="fas fa-user-shield"></i> Admin
+                            </a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle"></i>
+            {% elif message.tags == 'error' %}
+            <i class="fas fa-exclamation-circle"></i>
+            {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle"></i>
+            {% else %}
+            <i class="fas fa-info-circle"></i>
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">Titanium Science Club</div>
+                <p>St. Joseph International School</p>
+                <p>&copy; {% now "Y" %} Titanium Science Club. All rights reserved.</p>
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1.5rem;">
+                    <a href="mailto:info@titanium.sjis.edu.bd" class="text-muted">
+                        <i class="fas fa-envelope"></i> Contact Support
+                    </a>
+                    <a href="https://titanium.sjis.edu.bd" class="text-muted">
+                        <i class="fas fa-globe"></i> Visit Website
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Auto-hide messages after 5 seconds -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function (message) {
+                setTimeout(function () {
+                    message.style.animation = 'slideOut 0.3s ease-in forwards';
+                    setTimeout(function () {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+
+        // Add slideOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

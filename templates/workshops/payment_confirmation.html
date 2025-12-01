@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Confirmation - Titanium Science Club{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+    <!-- Registration Summary -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-credit-card"></i> Payment Confirmation
+            </h2>
+        </div>
+        <div class="card-body">
+            <div
+                style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Registration Details</h3>
+                <p><strong>Registration Number:</strong> <span style="color: var(--primary-600); font-weight: 700;">{{ registration.registration_number }}</span></p>
+                <p><strong>Student Name:</strong> {{ registration.student_name }}</p>
+                <p><strong>Workshop:</strong> {{ workshop.name }}</p>
+            </div>
+
+            <div
+                style="background: white; border: 1px solid var(--gray-200); padding: 1.5rem; border-radius: var(--radius-lg);">
+                <h3 style="margin-bottom: 1rem;">Payment Summary</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span style="font-size: 1.125rem;">Workshop Fee:</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--primary-600);">৳{{ workshop.fee }}</span>
+                </div>
+                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gray-200);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 1.25rem; font-weight: 600;">Total Amount:</span>
+                    <span style="font-size: 2rem; font-weight: 700; color: var(--success-text);">৳{{ workshop.fee }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Instructions -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-info-circle"></i> Payment Instructions
+            </h3>
+        </div>
+        <div class="card-body">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-text); margin-top: 4px;"></i>
+                    <span>You will be redirected to SSLCommerz secure payment gateway</span>
+                </li>
+                <li style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-text); margin-top: 4px;"></i>
+                    <span>Complete the payment using your preferred method (Card, Mobile Banking, etc.)</span>
+                </li>
+                <li style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-text); margin-top: 4px;"></i>
+                    <span>After successful payment, you will receive a confirmation email</span>
+                </li>
+                <li style="display: flex; gap: 1rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-text); margin-top: 4px;"></i>
+                    <span>You can download your receipt from the confirmation page</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Payment Button -->
+    <div class="card">
+        <div class="card-body text-center">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-lock"></i> Proceed to Secure Payment
+                </button>
+            </form>
+            <p style="color: var(--gray-500); margin-top: 1rem; margin-bottom: 0; font-size: 0.875rem;">
+                <i class="fas fa-shield-alt"></i> Secured by SSLCommerz
+            </p>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'workshop_list' %}" class="btn btn-outline" style="background: white;">
+            <i class="fas fa-arrow-left"></i> Back to Workshops
+        </a>
+    </div>
+</div>
+{% endblock %}

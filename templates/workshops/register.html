@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register for {{ workshop.name }} - Titanium Science Club{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+    <!-- Workshop Summary Card -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <i class="fas fa-flask"></i> {{ workshop.name }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="workshop-detail">
+                <i class="fas fa-calendar workshop-detail-icon"></i>
+                <div>
+                    <strong>Date:</strong> {{ workshop.workshop_date }}
+                </div>
+            </div>
+            <div class="workshop-detail">
+                <i class="fas fa-clock workshop-detail-icon"></i>
+                <div>
+                    <strong>Time:</strong> {{ workshop.time }} ({{ workshop.duration }})
+                </div>
+            </div>
+            <div class="workshop-detail">
+                <i class="fas fa-map-marker-alt workshop-detail-icon"></i>
+                <div>
+                    <strong>Venue:</strong> {{ workshop.venue }}
+                </div>
+            </div>
+            {% if not workshop.is_free %}
+            <div class="workshop-detail">
+                <i class="fas fa-tag workshop-detail-icon"></i>
+                <div>
+                    <strong>Fee:</strong> <span
+                        style="color: var(--primary-600); font-size: 1.25rem; font-weight: 700;">৳{{ workshop.fee }}</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="workshop-detail">
+                <i class="fas fa-gift workshop-detail-icon"></i>
+                <div>
+                    <strong>Fee:</strong> <span
+                        style="color: var(--success-600); font-size: 1.25rem; font-weight: 700;">FREE</span>
+                </div>
+            </div>
+            {% endif %}
+            <div class="workshop-detail">
+                <i class="fas fa-users workshop-detail-icon"></i>
+                <div>
+                    <strong>Available Slots:</strong> {{ workshop.available_slots }} / {{ workshop.capacity }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-edit"></i> Student Registration Form
+            </h3>
+        </div>
+        <div class="card-body">
+            <form method="post" id="registrationForm">
+                {% csrf_token %}
+
+                <!-- Student Name -->
+                <div class="form-group">
+                    <label for="{{ form.student_name.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> Student Name *
+                    </label>
+                    {{ form.student_name }}
+                    {% if form.student_name.errors %}
+                    {{ form.student_name.errors }}
+                    {% endif %}
+                </div>
+
+                <!-- Grade -->
+                <div class="form-group">
+                    <label for="{{ form.grade.id_for_label }}" class="form-label">
+                        <i class="fas fa-graduation-cap"></i> Grade (2-12) *
+                    </label>
+                    {{ form.grade }}
+                    {% if form.grade.errors %}
+                    {{ form.grade.errors }}
+                    {% endif %}
+
+                </div>
+
+                <!-- School Name -->
+                <div class="form-group">
+                    <label for="{{ form.school.id_for_label }}" class="form-label">
+                        <i class="fas fa-school"></i> School Name *
+                    </label>
+                    {{ form.school }}
+                    {% if form.school.errors %}
+                    {{ form.school.errors }}
+                    {% endif %}
+                </div>
+
+                <!-- Contact Number -->
+                <div class="form-group">
+                    <label for="{{ form.contact_number.id_for_label }}" class="form-label">
+                        <i class="fas fa-phone"></i> Contact Number *
+                    </label>
+                    {{ form.contact_number }}
+                    {% if form.contact_number.errors %}
+                    {{ form.contact_number.errors }}
+                    {% endif %}
+                    <small class="text-muted">Format: 01712345678 or +8801712345678</small>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        <i class="fas fa-envelope"></i> Email Address *
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    {{ form.email.errors }}
+                    {% endif %}
+                </div>
+
+                <!-- Terms and Conditions -->
+                <div class="form-group">
+                    <div class="form-check">
+                        {{ form.terms_agreed }}
+                        <label for="{{ form.terms_agreed.id_for_label }}" class="form-check-label">
+                            I agree to the terms and conditions *
+                        </label>
+                    </div>
+                    {% if form.terms_agreed.errors %}
+                    {{ form.terms_agreed.errors }}
+                    {% endif %}
+                </div>
+
+                <!-- Non-field errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-paper-plane"></i>
+                        {% if workshop.is_free %}
+                        Complete Registration
+                        {% else %}
+                        Proceed to Payment
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Information Notice -->
+    <div class="card" style="margin-top: 2rem;">
+        <div class="card-body">
+            <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-info-circle" style="color: var(--primary-500);"></i>
+                Important Notes
+            </h4>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 0.5rem; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">All fields marked with * are required</span>
+                </li>
+                <li style="margin-bottom: 0.5rem; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">Please ensure your email address is correct to receive
+                        confirmation</span>
+                </li>
+                <li style="margin-bottom: 0.5rem; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">Your contact number will be used for any workshop-related
+                        updates</span>
+                </li>
+                {% if not workshop.is_free %}
+                <li style="margin-bottom: 0.5rem; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">After registration, you will be redirected to SSLCommerz for
+                        secure payment</span>
+                </li>
+                <li style="display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">You will receive a receipt after successful payment</span>
+                </li>
+                {% else %}
+                <li style="display: flex; gap: 0.75rem;">
+                    <i class="fas fa-check"
+                        style="color: var(--success-text); margin-top: 4px; font-size: 0.875rem;"></i>
+                    <span style="color: var(--gray-600);">You will receive a confirmation email after successful
+                        registration</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'workshop_list' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Workshops
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Client-side form validation
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+
+
+        const termsAgreed = document.querySelector('input[name="terms_agreed"]').checked;
+        if (!termsAgreed) {
+            e.preventDefault();
+            alert('Please agree to the terms and conditions.');
+            return;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Titanium Science Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon.primary {
+        background: var(--primary-50);
+        color: var(--primary-600);
+    }
+
+    .stat-icon.success {
+        background: var(--success-surface);
+        color: var(--success-text);
+    }
+
+    .stat-icon.warning {
+        background: var(--warning-surface);
+        color: var(--warning-text);
+    }
+
+    .stat-icon.accent {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--accent-500);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 0.25rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        font-weight: 500;
+    }
+
+    .chart-container {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+
+    .chart-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin-bottom: 1.5rem;
+    }
+
+    .table-container {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .dashboard-table thead {
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .dashboard-table th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .dashboard-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: 0.9375rem;
+        color: var(--gray-600);
+    }
+
+    .dashboard-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .dashboard-table tr:hover {
+        background: var(--gray-50);
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-success {
+        background: var(--success-surface);
+        color: var(--success-text);
+    }
+
+    .badge-warning {
+        background: var(--warning-surface);
+        color: var(--warning-text);
+    }
+
+    .badge-primary {
+        background: var(--primary-50);
+        color: var(--primary-700);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="hero">
+        <h1 class="hero-title">
+            <i class="fas fa-chart-line"></i> Admin Dashboard
+        </h1>
+        <p class="hero-subtitle">Workshop registration statistics and analytics</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ total_registrations }}</div>
+            <div class="stat-label">Total Registrations</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-value">৳{{ total_revenue|floatformat:2 }}</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon accent">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-value">{{ active_workshops }}</div>
+            <div class="stat-label">Active Workshops</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">{{ pending_payments }}</div>
+            <div class="stat-label">Pending Payments</div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Payment Status Chart -->
+        <div class="chart-container">
+            <h3 class="chart-title">Payment Status Breakdown</h3>
+            <canvas id="paymentChart"></canvas>
+        </div>
+
+        <!-- Revenue by Workshop Chart -->
+        <div class="chart-container">
+            <h3 class="chart-title">Revenue by Workshop (Top 10)</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Event-wise Participants Table -->
+    <div class="table-container">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--gray-200);">
+            <h3 class="chart-title" style="margin: 0;">Workshop Statistics</h3>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Workshop Name</th>
+                    <th>Date</th>
+                    <th>Total Participants</th>
+                    <th>Completed</th>
+                    <th>Pending</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for workshop in event_stats %}
+                <tr>
+                    <td><strong>{{ workshop.name }}</strong></td>
+                    <td>{{ workshop.workshop_date }}</td>
+                    <td>{{ workshop.total_participants }}</td>
+                    <td><span class="badge badge-success">{{ workshop.completed_payments }}</span></td>
+                    <td><span class="badge badge-warning">{{ workshop.pending_payments }}</span></td>
+                    <td><strong>৳{{ workshop.revenue|default:"0.00"|floatformat:2 }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--gray-400);">No workshops found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Registrations -->
+    <div class="table-container">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--gray-200);">
+            <h3 class="chart-title" style="margin: 0;">Recent Registrations</h3>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Registration #</th>
+                    <th>Student Name</th>
+                    <th>Workshop</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in recent_registrations %}
+                <tr>
+                    <td><strong>{{ reg.registration_number }}</strong></td>
+                    <td>{{ reg.student_name }}</td>
+                    <td>{{ reg.workshop.name }}</td>
+                    <td>
+                        {% if reg.payment_status == 'completed' %}
+                        <span class="badge badge-success">Completed</span>
+                        {% elif reg.payment_status == 'pending' %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% elif reg.payment_status == 'free' %}
+                        <span class="badge badge-primary">Free</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ reg.registered_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--gray-400);">No registrations yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Payment Status Chart
+    const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(paymentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'Pending', 'Failed', 'Free'],
+            datasets: [{
+                data: [
+                    {{ payment_breakdown.completed }},
+            {{ payment_breakdown.pending }},
+                    {{ payment_breakdown.failed }},
+        {{ payment_breakdown.free }}
+                ],
+        backgroundColor: [
+        '#10b981',
+        '#f59e0b',
+        '#ef4444',
+        '#0b8ce9'
+    ],
+        borderWidth: 0
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 15,
+                    font: {
+                        family: 'Inter',
+                        size: 12
+                    }
+                }
+            }
+        }
+    }
+    });
+
+    // Revenue by Workshop Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for item in revenue_by_workshop %}
+                '{{ item.name }}'{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        datasets: [{
+            label: 'Revenue (৳)',
+            data: [
+                {% for item in revenue_by_workshop %}
+                    {{ item.revenue }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+                ],
+    backgroundColor: '#0b8ce9',
+        borderRadius: 8
+            }]
+        },
+    options: {
+        responsive: true,
+            maintainAspectRatio: true,
+                plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                    grid: {
+                    color: '#f3f4f6'
+                },
+                ticks: {
+                    font: {
+                        family: 'Inter'
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    font: {
+                        family: 'Inter',
+                            size: 10
+                    },
+                    maxRotation: 45,
+                        minRotation: 45
+                }
+            }
+        }
+    }
+    });
+</script>
+{% endblock %}
