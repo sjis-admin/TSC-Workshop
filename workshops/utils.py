@@ -52,7 +52,7 @@ Registration Details:
 Student Information:
 - Name: {registration.student_name}
 - Grade: {registration.grade}
-- School: {registration.school_name}
+- School: {registration.school.name if registration.school else registration.school_name}
 - Contact: {registration.contact_number}
 - Email: {registration.email}
 
@@ -217,7 +217,7 @@ def generate_receipt_pdf(registration):
     student_data = [
         ['Student Name:', registration.student_name],
         ['Grade:', str(registration.grade)],
-        ['School:', registration.school_name],
+        ['School:', registration.school.name if registration.school else registration.school_name],
         ['Contact Number:', registration.contact_number],
         ['Email:', registration.email],
     ]

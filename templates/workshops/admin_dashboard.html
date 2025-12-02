@@ -262,6 +262,7 @@
                 <tr>
                     <th>Registration #</th>
                     <th>Student Name</th>
+                    <th>School</th>
                     <th>Workshop</th>
                     <th>Status</th>
                     <th>Date</th>
@@ -272,6 +273,7 @@
                 <tr>
                     <td><strong>{{ reg.registration_number }}</strong></td>
                     <td>{{ reg.student_name }}</td>
+                    <td>{{ reg.school.name|default:reg.school_name }}</td>
                     <td>{{ reg.workshop.name }}</td>
                     <td>
                         {% if reg.payment_status == 'completed' %}
@@ -286,7 +288,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" style="text-align: center; color: var(--gray-400);">No registrations yet</td>
+                    <td colspan="6" style="text-align: center; color: var(--gray-400);">No registrations yet</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -124,7 +124,7 @@ class WorkshopAdmin(admin.ModelAdmin):
                 ws.cell(row=row_num, column=2, value=workshop.name)
                 ws.cell(row=row_num, column=3, value=reg.student_name)
                 ws.cell(row=row_num, column=4, value=reg.grade)
-                ws.cell(row=row_num, column=5, value=reg.school_name)
+                ws.cell(row=row_num, column=5, value=reg.school.name if reg.school else reg.school_name)
                 ws.cell(row=row_num, column=6, value=reg.contact_number)
                 ws.cell(row=row_num, column=7, value=reg.email)
                 ws.cell(row=row_num, column=8, value=reg.get_payment_status_display())
@@ -169,8 +169,8 @@ class RegistrationAdmin(admin.ModelAdmin):
         'registration_number', 'student_name', 'grade', 'workshop', 
         'payment_status_display', 'registered_at'
     ]
-    list_filter = ['payment_status', 'grade', 'workshop', 'registered_at']
-    search_fields = ['registration_number', 'student_name', 'email', 'school_name']
+    list_filter = ['payment_status', 'grade', 'workshop', 'school', 'registered_at']
+    search_fields = ['registration_number', 'student_name', 'email', 'school__name', 'school_name']
     readonly_fields = ['registration_number', 'registered_at', 'updated_at']
     
     fieldsets = (
@@ -178,7 +178,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             'fields': ('registration_number', 'workshop', 'payment_status')
         }),
         ('Student Information', {
-            'fields': ('student_name', 'grade', 'school_name', 'contact_number', 'email')
+            'fields': ('student_name', 'grade', 'school', 'contact_number', 'email')
         }),
         ('Timestamps', {
             'fields': ('registered_at', 'updated_at'),
@@ -239,7 +239,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             ws.cell(row=row_num, column=3, value=reg.workshop.workshop_date)
             ws.cell(row=row_num, column=4, value=reg.student_name)
             ws.cell(row=row_num, column=5, value=reg.grade)
-            ws.cell(row=row_num, column=6, value=reg.school_name)
+            ws.cell(row=row_num, column=6, value=reg.school.name if reg.school else reg.school_name)
             ws.cell(row=row_num, column=7, value=reg.contact_number)
             ws.cell(row=row_num, column=8, value=reg.email)
             ws.cell(row=row_num, column=9, value=reg.get_payment_status_display())
@@ -327,7 +327,7 @@ class PaymentAdmin(admin.ModelAdmin):
         
         # Define headers
         headers = [
-            'Transaction ID', 'Registration Number', 'Student Name', 
+            'Transaction ID', 'Registration Number', 'Student Name', 'School',
             'Workshop', 'Amount', 'Currency', 'Payment Status', 
             'Payment Method', 'Initiated At', 'Completed At'
         ]
@@ -345,16 +345,18 @@ class PaymentAdmin(admin.ModelAdmin):
         
         # Write data
         for row_num, payment in enumerate(queryset, 2):
+            reg = payment.registration
             ws.cell(row=row_num, column=1, value=payment.transaction_id)
-            ws.cell(row=row_num, column=2, value=payment.registration.registration_number)
-            ws.cell(row=row_num, column=3, value=payment.registration.student_name)
-            ws.cell(row=row_num, column=4, value=payment.registration.workshop.name)
-            ws.cell(row=row_num, column=5, value=float(payment.amount))
-            ws.cell(row=row_num, column=6, value=payment.currency)
-            ws.cell(row=row_num, column=7, value=payment.payment_status)
-            ws.cell(row=row_num, column=8, value=payment.get_payment_method_display())
-            ws.cell(row=row_num, column=9, value=payment.initiated_at.strftime('%Y-%m-%d %H:%M:%S'))
-            ws.cell(row=row_num, column=10, value=payment.completed_at.strftime('%Y-%m-%d %H:%M:%S') if payment.completed_at else 'N/A')
+            ws.cell(row=row_num, column=2, value=reg.registration_number)
+            ws.cell(row=row_num, column=3, value=reg.student_name)
+            ws.cell(row=row_num, column=4, value=reg.school.name if reg.school else reg.school_name)
+            ws.cell(row=row_num, column=5, value=reg.workshop.name)
+            ws.cell(row=row_num, column=6, value=float(payment.amount))
+            ws.cell(row=row_num, column=7, value=payment.currency)
+            ws.cell(row=row_num, column=8, value=payment.payment_status)
+            ws.cell(row=row_num, column=9, value=payment.get_payment_method_display())
+            ws.cell(row=row_num, column=10, value=payment.initiated_at.strftime('%Y-%m-%d %H:%M:%S'))
+            ws.cell(row=row_num, column=11, value=payment.completed_at.strftime('%Y-%m-%d %H:%M:%S') if payment.completed_at else 'N/A')
         
         # Auto-adjust column widths
         for column in ws.columns:
